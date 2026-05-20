@@ -1,0 +1,45 @@
+# Python/Backend virtual environments and caches
+venv/
+backend/venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+ENV/
+*.manifest
+*.spec
+
+# Local environment configuration
+.env
+backend/.env
+*.env.local
+*.env.*.local
+
+# Node/Frontend dependencies and builds
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+
+# Vector database/local data files
+vector_db/
+*.db
+*.sqlite3
+*.pdf
+
+# Editor & System files
+.vscode/
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
