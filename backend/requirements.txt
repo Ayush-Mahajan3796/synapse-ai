@@ -8,5 +8,12 @@ langchain-text-splitters
 langchain-groq
 sentence-transformers
 PyPDF2
+pytesseract
+pdf2image
+Pillow
 groq
 numpy
+sqlalchemy
+psycopg2-binary
+pgvector
+rank-bm25

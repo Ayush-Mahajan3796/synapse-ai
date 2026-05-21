@@ -3,7 +3,7 @@ import { Send, User, Bot, Loader2, Sparkles, ChevronDown, BookOpen } from 'lucid
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 
-export default function ChatInterface() {
+export default function ChatInterface({ user }) {
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -23,6 +23,50 @@ export default function ChatInterface() {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    if (!user) return;
+    const fetchHistory = async () => {
+      try {
+        const res = await axios.get('http://localhost:8000/api/chat/history?session_id=default', {
+          headers: { 'X-User-Id': user.id }
+        });
+        if (res.data && res.data.length > 0) {
+          const loadedMessages = [
+            {
+              id: 1,
+              role: 'assistant',
+              content: "Hello! I am SynapseAI. Upload a document using the sidebar, and I'll help you understand it, create summaries, and answer your questions."
+            }
+          ];
+          res.data.forEach(item => {
+            loadedMessages.push({
+              id: `${item.id}_user`,
+              role: 'user',
+              content: item.message
+            });
+            loadedMessages.push({
+              id: `${item.id}_assistant`,
+              role: 'assistant',
+              content: item.response
+            });
+          });
+          setMessages(loadedMessages);
+        } else {
+          setMessages([
+            {
+              id: 1,
+              role: 'assistant',
+              content: "Hello! I am SynapseAI. Upload a document using the sidebar, and I'll help you understand it, create summaries, and answer your questions."
+            }
+          ]);
+        }
+      } catch (err) {
+        console.error("Failed to load chat history:", err);
+      }
+    };
+    fetchHistory();
+  }, [user]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -41,6 +85,8 @@ export default function ChatInterface() {
       const res = await axios.post('http://localhost:8000/api/chat', {
         query: userMessage.content,
         session_id: 'default'
+      }, {
+        headers: { 'X-User-Id': user?.id }
       });
 
       const assistantMessage = {

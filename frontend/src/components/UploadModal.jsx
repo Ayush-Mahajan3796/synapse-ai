@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, UploadCloud, FileText, CheckCircle2, Loader2 } from 'lucide-react';
 import axios from 'axios';
 
-export default function UploadModal({ onClose, onSuccess }) {
+export default function UploadModal({ onClose, onSuccess, userId }) {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState('idle'); // idle, uploading, success, error
   const [errorMsg, setErrorMsg] = useState('');
@@ -16,7 +16,10 @@ export default function UploadModal({ onClose, onSuccess }) {
 
     try {
       const res = await axios.post('http://localhost:8000/api/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'X-User-Id': userId
+        }
       });
       if (res.data.error) {
         throw new Error(res.data.error);

@@ -6,9 +6,15 @@ import os
 # Load env variables
 load_dotenv()
 
-from routes import upload, chat
+# Initialize Database tables
+from database.connection import Base, engine, ensure_sqlite_schema
+import database.models
+Base.metadata.create_all(bind=engine)
+ensure_sqlite_schema()
 
-app = FastAPI(title="AI Research & Learning Copilot API")
+from routes import upload, chat, auth
+
+app = FastAPI(title="SynapseAI API")
 
 # Configure CORS for frontend access
 app.add_middleware(
@@ -20,6 +26,7 @@ app.add_middleware(
 )
 
 # Include routes
+app.include_router(auth.router, prefix="/api")
 app.include_router(upload.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
 
