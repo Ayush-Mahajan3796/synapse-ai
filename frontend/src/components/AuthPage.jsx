@@ -9,120 +9,108 @@ export default function AuthPage({ onLoginSuccess }) {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    setError('');
+
     if (!username.trim() || !password.trim()) {
       setError('Username and password are required');
       return;
     }
-    setError('');
+
     setIsLoading(true);
 
     try {
       if (isRegister) {
-        // Register flow
         const registerRes = await axios.post('http://localhost:8000/api/register', {
           username,
           password,
-          email: email.trim() || null
+          email,
         });
-        
         onLoginSuccess({
           id: registerRes.data.user_id,
-          username: registerRes.data.username
+          username: registerRes.data.username,
         });
       } else {
-        // Login flow
         const res = await axios.post('http://localhost:8000/api/login', {
           username,
-          password
+          password,
         });
         onLoginSuccess({
           id: res.data.user_id,
-          username: res.data.username
+          username: res.data.username,
         });
       }
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.detail || 'An error occurred. Please try again.');
+      setError(err.response?.data?.detail || err.message || 'Authentication failed');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="auth-container">
-      {/* Background glow effects */}
-      <div className="auth-glow auth-glow-1"></div>
-      <div className="auth-glow auth-glow-2"></div>
-
-      <div className="auth-card">
-        <div className="auth-header">
-          <div className="logo-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="url(#logo-grad)"/>
-              <defs>
-                <linearGradient id="logo-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#3b82f6"/>
-                  <stop offset="1" stopColor="#8b5cf6"/>
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <h1>SynapseAI</h1>
-          <p>{isRegister ? 'Create your platform account' : 'Sign in to access your dashboard'}</p>
+    <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-100 p-4">
+      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold">SynapseAI</h1>
+          <p className="text-slate-400 mt-2">{isRegister ? 'Create your account' : 'Sign in to continue'}</p>
         </div>
 
-        {error && <div className="auth-error-box">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="auth-form">
-          <div className="form-group">
-            <label htmlFor="username">Username</label>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-slate-400 mb-2">Username</label>
             <input
-              type="text"
-              id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-blue-500 focus:outline-none"
               placeholder="Enter your username"
-              required
             />
           </div>
 
           {isRegister && (
-            <div className="form-group">
-              <label htmlFor="email">Email (Optional)</label>
+            <div>
+              <label className="block text-sm text-slate-400 mb-2">Email</label>
               <input
-                type="email"
-                id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@example.com"
+                className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-blue-500 focus:outline-none"
+                placeholder="Enter your email (optional)"
               />
             </div>
           )}
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          <div>
+            <label className="block text-sm text-slate-400 mb-2">Password</label>
             <input
               type="password"
-              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
+              className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-blue-500 focus:outline-none"
+              placeholder="Enter your password"
             />
           </div>
 
-          <button type="submit" className="auth-submit-btn" disabled={isLoading}>
-            {isLoading ? 'Processing...' : isRegister ? 'Create Account' : 'Sign In'}
-          </button>
-        </form>
+          {error && <div className="text-sm text-red-400">{error}</div>}
 
-        <div className="auth-toggle">
-          <span>{isRegister ? 'Already have an account?' : "Don't have an account?"}</span>
-          <button onClick={() => { setIsRegister(!isRegister); setError(''); }} className="toggle-btn">
-            {isRegister ? 'Sign In' : 'Register'}
+          <button
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="w-full rounded-2xl bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isLoading ? 'Processing...' : isRegister ? 'Create account' : 'Sign in'}
           </button>
+
+          <div className="text-center text-sm text-slate-400">
+            {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
+            <button
+              onClick={() => {
+                setIsRegister(!isRegister);
+                setError('');
+              }}
+              className="font-semibold text-blue-400 hover:text-blue-300"
+            >
+              {isRegister ? 'Sign in' : 'Register'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

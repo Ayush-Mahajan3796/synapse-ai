@@ -16,6 +16,5 @@ numpy
 sqlalchemy
 psycopg2-binary
 pgvector
-pymongo
-dnspython
+pymysql
 rank-bm25

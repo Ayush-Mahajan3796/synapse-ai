@@ -9,8 +9,14 @@ load_dotenv()
 # Initialize Database tables
 from database.connection import Base, engine, ensure_sqlite_schema
 import database.models
-Base.metadata.create_all(bind=engine)
-ensure_sqlite_schema()
+import logging
+
+try:
+    Base.metadata.create_all(bind=engine)
+    ensure_sqlite_schema()
+    logging.info("Database tables verified/created successfully.")
+except Exception as e:
+    logging.error(f"Failed to initialize the database on startup: {e}")
 
 from routes import upload, chat, auth
 
