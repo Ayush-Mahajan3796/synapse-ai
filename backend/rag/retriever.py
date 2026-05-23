@@ -84,9 +84,9 @@ class HybridRetriever:
             similarities.sort(key=lambda x: x[0], reverse=True)
             return [(chunk_id, text, filename) for _, chunk_id, text, filename in similarities[:top_k]]
 
-    def retrieve(self, db: Session, query: str, user_id: int, top_k: int = 4) -> list:
+    def retrieve(self, db: Session, query: str, user_id, top_k: int = 4) -> list:
         """Perform Hybrid Search using Reciprocal Rank Fusion (RRF), fully isolated by user_id."""
-        if user_id is None:
+        if user_id is None:  # explicit None check — user_id=0 or 1 are valid
             return []
             
         # 1. Generate query embedding

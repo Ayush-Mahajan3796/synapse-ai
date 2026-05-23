@@ -26,6 +26,14 @@ def create_chat_message(db: Session, session_id: str, message: str, response: st
     db.refresh(db_chat)
     return db_chat
 
+
+def delete_user_chats(db: Session, user_id: int) -> int:
+    """Delete all chat records for a specific user ID."""
+    rows_deleted = db.query(Chat).filter(Chat.user_id == user_id).delete()
+    db.commit()
+    return rows_deleted
+
+
 # --- Document Operations ---
 
 def create_user(

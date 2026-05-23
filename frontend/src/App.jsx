@@ -43,7 +43,19 @@ function App() {
     }
   }, [user]);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    if (user) {
+      try {
+        await fetch('http://localhost:8000/api/chat/clear', {
+          method: 'DELETE',
+          headers: {
+            'X-User-Id': user.id
+          }
+        });
+      } catch (err) {
+        console.error('Failed to clear chat history on logout:', err);
+      }
+    }
     setUser(null);
     setIsUploadOpen(false);
   };

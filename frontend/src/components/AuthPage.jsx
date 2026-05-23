@@ -17,6 +17,11 @@ export default function AuthPage({ onLoginSuccess }) {
       return;
     }
 
+    if (isRegister && username.trim() !== 'ayush' && !email.trim()) {
+      setError('Email is required');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -68,12 +73,14 @@ export default function AuthPage({ onLoginSuccess }) {
 
           {isRegister && (
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Email</label>
+              <label className="block text-sm text-slate-400 mb-2">
+                Email {username.trim() !== 'ayush' && <span className="text-red-400">*</span>}
+              </label>
               <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full rounded-2xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-blue-500 focus:outline-none"
-                placeholder="Enter your email (optional)"
+                placeholder={username.trim() === 'ayush' ? "Enter your email (optional)" : "Enter your email (required)"}
               />
             </div>
           )}

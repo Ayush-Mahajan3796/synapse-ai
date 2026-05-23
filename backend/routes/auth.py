@@ -21,6 +21,15 @@ def register(request: UserRegisterRequest, db: Session = Depends(get_db)):
             detail="Username must not be empty"
         )
 
+    # Check if email is required (everyone except owner 'ayush')
+    if username != "ayush":
+        if not request.email or not request.email.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email is required for registration"
+            )
+
+
     # Check for duplicate username
     if db.query(User).filter(User.username == username).first():
         raise HTTPException(
@@ -70,9 +79,9 @@ def login(request: UserLoginRequest, db: Session = Depends(get_db)):
     # If MySQL fails or isn't set up, you can still log in with this account.
     if request.username == "ayush" and request.password == "993796":
         return AuthResponse(
-            user_id=0,  # Special ID for owner
+            user_id=1,  # Use 1 (not 0) to avoid falsy user_id issues in DB queries
             username="ayush",
-            message="Owner login successful (Bypassed MySQL)"
+            message="Owner login successful"
         )
     # ----------------------------
 

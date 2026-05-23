@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Depends, Header
+from fastapi import APIRouter, UploadFile, File, Depends, Header, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from database.connection import get_db
@@ -20,6 +20,9 @@ async def upload_pdf(
         content = await file.read()
         text, ocr_used = extract_text_from_pdf(content)
         
+        if not text or not text.strip():
+            raise HTTPException(status_code=400, detail="Could not extract any text from the uploaded PDF.")
+
         # 1. Create a Document record, linking it to the current user_id
         db_doc = crud.create_document(db, filename=file.filename, user_id=x_user_id)
         
@@ -32,12 +35,18 @@ async def upload_pdf(
             "chunks_added": chunks_added,
             "ocr_used": ocr_used
         }
+    except HTTPException:
+        raise
     except Exception as e:
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
 
 @router.get("/documents", response_model=List[DocumentResponse])
 def get_user_documents(x_user_id: Optional[int] = Header(None), db: Session = Depends(get_db)):
     """Retrieve all document upload records for the current user."""
     if x_user_id is None:
         return []
-    return db.query(Document).filter(Document.user_id == x_user_id).order_by(Document.id.desc()).all()
+    try:
+        return db.query(Document).filter(Document.user_id == x_user_id).order_by(Document.id.desc()).all()
+    except Exception:
+        return []
