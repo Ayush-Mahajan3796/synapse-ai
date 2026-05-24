@@ -29,7 +29,7 @@ export default function UploadModal({ onClose, onSuccess, userId }) {
       setTimeout(onClose, 1500);
     } catch (err) {
       setStatus('error');
-      setErrorMsg(err.message || "Failed to upload file");
+      setErrorMsg(err.response?.data?.detail || err.message || "Failed to upload file");
     }
   };
 
