@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Upload, MessageSquare, BookOpen, BrainCircuit } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 import UploadModal from './components/UploadModal';
 import ChatInterface from './components/ChatInterface';
 import AuthPage from './components/AuthPage';
@@ -65,7 +66,9 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex bg-slate-900 text-slate-100 overflow-hidden">
+    <>
+      <Analytics />
+      <div className="min-h-screen flex bg-slate-900 text-slate-100 overflow-hidden">
       {/* Sidebar */}
       <aside className="w-64 bg-slate-950 border-r border-slate-800 flex flex-col hidden md:flex">
         <div className="p-6 flex items-center gap-3">
@@ -144,6 +147,7 @@ function App() {
         />
       )}
     </div>
+    </>
   );
 }
 
